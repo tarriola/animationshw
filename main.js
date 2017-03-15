@@ -80,7 +80,7 @@ Background.prototype.update = function () {
 // inheritance
 function Megaman(game, spritesheet, x, y, type) {
     // this.animation = new Animation(spritesheet, 512, 256, 2, 0.05, 8, true, 0.5);
-    this.teleportIn = new Animation(AM.getAsset("./img/megaman1.png"), 56, 115, 17, 0.10, 17, false, 1.5);
+    this.teleportIn = new Animation(AM.getAsset("./img/megaman1.png"), 56, 115, 17, 0.10, 17, false, 1.4);
     this.rest = new Animation(AM.getAsset("./img/megaman2.png"), 79, 79, 12, 0.15, 12, false, 1.45);
     this.run = new Animation(AM.getAsset("./img/megaman3.png"), 87, 79, 11, 0.10, 11, true, 1.25);
     this.jump = new Animation(AM.getAsset("./img/megaman4.png"), 73, 93, 13, 0.10, 13, false, 1.25);
@@ -121,10 +121,16 @@ Megaman.prototype = new Entity();
 Megaman.prototype.constructor = Megaman;
 
 Megaman.prototype.update = function () {
-    this.x += this.game.clockTick * this.speed;
+    if (this.teleportIn.isDone()) {
+        this.teleport = false;
+    }
+    if (!this.teleport) {
+        this.x += this.game.clockTick * this.speed;
+    }
     if (this.x > 850) {
         this.x = 20;
-
+        this.teleport = true;
+        this.teleportIn.elapsedTime = 0;
         this.jump.elapsedTime = 0;
     }
 
@@ -165,7 +171,8 @@ Megaman.prototype.draw = function () {
     if (this.jumping) {
         this.jump.drawFrame(this.game.clockTick, this.ctx, this.x + 17, this.y - 34);
     } else if (this.teleport) {
-      this.teleportIn.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+      this.teleportIn.drawFrame(this.game.clockTick, this.ctx, this.x, this.y- 55);
+      // this.teleport = false;
     }  else {
         this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
     }
@@ -196,7 +203,7 @@ AM.downloadAll(function () {
     gameEngine.init(ctx);
     gameEngine.start();
 
-    gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/grid.jpg")));
+    gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/citynight.jpg")));
     // gameEngine.addEntity(new MushroomDude(gameEngine, AM.getAsset("./img/mushroomdude.png")));
     gameEngine.addEntity(new Megaman(gameEngine, AM.getAsset("./img/runningcat.png"), 20, 400, 3));
     // gameEngine.addEntity(new Guy(gameEngine, AM.getAsset("./img/guy.jpg")));
